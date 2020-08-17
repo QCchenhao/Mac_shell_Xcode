@@ -1,14 +1,12 @@
 #!/bin/bash
+#使用方法
+#打开终端。把本文件直接拉取到终端获取路径，点击回车执行
 
 #引用同目录下的常用方法文件
 source $(cd `dirname $0`; pwd)/commonFunctions.sh
 
-#使用方法
-#打开终端。把本文件直接拉取到终端获取路径，点击回车执行
-
 #获取脚本所在路径
 shell_path=$(cd `dirname $0`; pwd)
-
 
 #获取脚本所在路径的上层路径（项目所在路径）
 project_path=$(dirname "$shell_path")
@@ -40,6 +38,7 @@ runLog="打包中"
 #获取 .xcodeproj 文件全名
 path_xcworkspace="*.xcodeproj"
 
+#判断是否有xcworkspace文件设置项目名称
 if [ -e *.xcworkspace ]; then
 path_xcworkspace="*.xcworkspace"
 project_name=`basename $path_xcworkspace .xcworkspace`;
@@ -52,7 +51,7 @@ fi
 ##project_name="${project_path##*/}"
 #project_name=`basename $path_xcworkspace .xcodeproj`;
 
-#scheme名 将XXX替换成自己的sheme名
+#scheme名 默认与项目名称一样，不同可以在这里修改
 #scheme_name="${project_path##*/}"
 scheme_name=$project_name;
 
@@ -65,44 +64,16 @@ build_path=${shell_path}/build
 
 #plist文件所在路径
 exportOptionsPlistPath=${shell_path}/ExportOptions_development.plist
-
-##加入时间参数，在打包路径中
-#DATE=`date '+%Y-%m-%d-%T'`
+ 
 
 #导出.ipa文件所在路径
 exportIpaPath=${shell_path}/IPADir/${development_mode}
 
 #删除上一次的ipa包
 rm -r -f $exportIpaPath
- 
 
-##app-store, ad-hoc, package, enterprise
-#echo "请输入对应您选择打包方式的数字 ? [ 1:app-store（应用程序商店输入1） 2:enterprise （蒲公英-Fir输入2）] "
-#
-###
-#read number
-#while([[ $number != 1 ]] && [[ $number != 2 ]])
-#do
-#echo "错误! 应该输入1或者2"
-#echo "Place enter the number you want to export ? [ 1:app-store 2:enterprise] "
-#read number
-#done
-#
-#if [ $number == 1 ];then
-##development_mode=Release
-#exportOptionsPlistPath=${shell_path}/exportAppstore.plist
-#else
-##development_mode=Debug
-#exportOptionsPlistPath=${shell_path}/exportTest.plist
-#fi
+echoGreen " 正在清理工程  \n"
 
-#exportOptionsPlistPath=${project_path}/OAexportTest.plist
-
-
-echoGreen "///-----------\n     -正在清理工程  \n    ///-----------\n"
-
-#xcodebuild \
-#clean -configuration ${development_mode} -quiet  || exit
 
 if [ -e *.xcworkspace ]; then
 
@@ -111,6 +82,10 @@ archive -workspace ${project_path}/${project_name}.xcworkspace \
 -scheme ${scheme_name} \
 clean -configuration ${development_mode} -quiet  || exit
 else
+
+#xcodebuild \
+#clean -configuration ${development_mode} -quiet  || exit
+
 xcodebuild \
 archive -project ${project_path}/${project_name}.xcodeproj \
 -scheme ${scheme_name} \
@@ -118,25 +93,21 @@ clean -configuration ${development_mode} -quiet  || exit
 fi
 
 
-echoGreen "///-----------\n     -清理完成  \n    ///-----------\n"
+echoGreen " 清理完成"
 
 
-echoGreen "///-----------\n     -正在编译工程:'${development_mode}  \n    ///-----------\n"
+echoGreen "正在编译工程:${development_mode}"
  
+# 判断使用Cocoapods
 if [ -e *.xcworkspace ]; then
-
-
-    echoGreen "搜索到 .xcworkspace 文件，则使用了Cocoapods"
-     
+ 
     xcodebuild \
     archive -workspace ${project_path}/${project_name}.xcworkspace \
     -scheme ${scheme_name} \
     -configuration ${development_mode} \
     -archivePath ${build_path}/${project_name}.xcarchive  -quiet  || exit
 else
-
-    echoGreen "未搜索到 .xcworkspace 文件，没使用Cocoapods"
-
+ 
     xcodebuild \
     archive -project ${project_path}/${project_name}.xcodeproj \
     -scheme ${scheme_name} \
@@ -147,10 +118,10 @@ fi
 
 
  
-echoGreen "///-----------\n     -编译完成  \n    ///-----------\n"
+echoGreen " 编译完成"
 
 
-echoGreen "///-----------\n     -开始ipa打包  \n    ///-----------\n"
+echoGreen " 开始ipa打包 "
 
 
 xcodebuild -exportArchive -archivePath ${build_path}/${project_name}.xcarchive \
@@ -161,12 +132,12 @@ xcodebuild -exportArchive -archivePath ${build_path}/${project_name}.xcarchive \
 
 if [ -e $exportIpaPath/$scheme_name.ipa ]; then
  
-    echoGreen "///-----------\n     -ipa包已导出  \n    ///-----------\n"
+    echoGreen " ipa包已导出"
 
     open $exportIpaPath
 
 else
-    echoRed "///-----------\n     -ipa包导出失败  \n    ///-----------\n"
+    echoRed " ipa包导出失败"
 
     runLog="ipa包导出失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
 fi
@@ -214,7 +185,7 @@ fi
 #
 #
 # 通过api上传到蒲公英当中
-echoGreen "===上传至蒲公英平台==="
+echoGreen " 上传至蒲公英平台 "
 
 echo $packageTime
 
@@ -234,15 +205,15 @@ https://www.pgyer.com/apiv2/app/upload)
  echoGreen ${RESULT}
  
     if [ "${RESULT}" ]; then
-    echoGreen "===完成蒲公英平台上传==="
+    echoGreen "完成蒲公英平台上传 "
     runLog="完成蒲公英平台上传  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
     else
-    echoRed "===上传蒲公英平台失败==="
+    echoRed " 上传蒲公英平台失败 "
     runLog="上传蒲公英平台失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
     fi
 # open ${ipa_path}
 else
-echoRed "===上传蒲公英平台失败==="
+echoRed " 上传蒲公英平台失败 "
 runLog="打包失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
 fi
 
