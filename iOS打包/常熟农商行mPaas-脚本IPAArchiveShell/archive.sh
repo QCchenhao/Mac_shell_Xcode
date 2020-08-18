@@ -25,8 +25,8 @@ fi
 cd $project_path;
 
 # 蒲公英apiKey
-#pgyerApiKey="d8dc6ae0c0631c9e19119ee7416a4282"
-pgyerApiKey="6c84b348ede7ef86d9eba3d38e4bec69" #私人测试
+#pgyerApiKey="d8dcxxxxxxxx416a4282"
+pgyerApiKey="6c84xxxxxxxxxx4bec69" #私人测试
 
 
 #描述信息 （可以修改）
@@ -65,6 +65,13 @@ build_path=${shell_path}/build
 #plist文件所在路径
 exportOptionsPlistPath=${shell_path}/ExportOptions_development.plist
  
+printf "\033[33;1m  %-15s %-50s \n "  蒲公英  $pgyerApiKey
+printf " %-15s %-50s \n " 项目名称 $project_name
+printf " %-15s %-50s \n " 描述信息 $packageTime
+printf " %-15s %-50s \n " 打包模式 $development_mode
+printf " %-15s %-50s \n \033[0m" build路径 $build
+
+
 
 #导出.ipa文件所在路径
 exportIpaPath=${shell_path}/IPADir/${development_mode}
@@ -72,7 +79,7 @@ exportIpaPath=${shell_path}/IPADir/${development_mode}
 #删除上一次的ipa包
 rm -r -f $exportIpaPath
 
-echoGreen " 正在清理工程  \n"
+echoGreen " 正在清理工程 "
 
 
 if [ -e *.xcworkspace ]; then
@@ -139,11 +146,11 @@ if [ -e $exportIpaPath/$scheme_name.ipa ]; then
 else
     echoRed " ipa包导出失败"
 
-    runLog="ipa包导出失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
+    runLog="ipa包导出失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】"
 fi
 
    
-    echoGreen "///-----------\n     -打包ipa完成   \n    ///-----------\n"
+    echoGreen "打包ipa完成"
 
 
     # 清除 当前目录的 build 文件夹
@@ -164,8 +171,8 @@ fi
 #
 #if [ $number == 1 ];then
 #
-#u="weiJuTechnology@163.com"
-#p="weiJu2019---"
+#u="xxxxxxxcom"
+#p="xxxxxxx---"
 #
 ##验证并上传到App Store
 ## 将-u 后面的XXX替换成自己的AppleID的账号，-p后面的XXX替换成自己的密码
@@ -206,15 +213,15 @@ https://www.pgyer.com/apiv2/app/upload)
  
     if [ "${RESULT}" ]; then
     echoGreen "完成蒲公英平台上传 "
-    runLog="完成蒲公英平台上传  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
+    runLog="完成蒲公英平台上传  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】"
     else
     echoRed " 上传蒲公英平台失败 "
-    runLog="上传蒲公英平台失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
+    runLog="上传蒲公英平台失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】"
     fi
 # open ${ipa_path}
 else
 echoRed " 上传蒲公英平台失败 "
-runLog="打包失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】---"
+runLog="打包失败  打包时间：【`date \"+%Y-%m-%d %H:%M:%S\"`】"
 fi
 
 echo "$runLog" >> $shell_path/run_time.log

@@ -22,8 +22,8 @@ printf "%-10s %-8s %-4.2f\n" 郭靖 男 66.1234
 printf "%-10s %-8s %-4.2f\n" 杨过 男 48.6543
 printf "%-10s %-8s %-4.2f\n" 郭芙 女 47.9876
 
-foldername=$(date ‘+%Y-%M-%d’)
-echo '/// 正在编译工程:'${foldername}
+foldername="`date \"+%Y-%m-%d %H:%M:%S\"`"
+echo "/// 正在编译工程:${foldername}"
 
 
 clear
